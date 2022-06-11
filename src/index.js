@@ -13,19 +13,19 @@ app.get("/", async (req, res) => {
   const meta = req.headers;
   const todos = await Todo.find({});
   if (!todos) {
-    res.status(404).json({ meta, message: 'No Todos To Show' })
-   }
+    res.status(404).json({ meta, message: "No Todos To Show" });
+  }
   res.json({ message: "Welcome", todos });
 });
-app.get("/todos/:id", async (req, res) => { 
+app.get("/todos/:id", async (req, res) => {
   const { id } = req.params || 0;
   const todo = await Todo.findById(id);
   if (todo) {
-    res.status(200).json({ meta, todo })
+    res.status(200).json({ meta, todo });
   }
-  res.status(404).json({ meta, message: 'Todo Not Found' })
-})
-app.post("/todos/", (req, res) => {
+  res.status(404).json({ meta, message: "Todo Not Found" });
+});
+app.post("/todos/", async (req, res) => {
   const { title, description } = req.body;
   const meta = req.headers;
   const errors = [];
@@ -36,18 +36,24 @@ app.post("/todos/", (req, res) => {
     errors.push("The Description field is required.");
   }
   if (errors.length > 0) {
-    res.status(400).json({ errors, meta})
-   }
-  let todo = new Todo({ title, description })
+    res.status(400).json({ errors, meta });
+  }
+  let todo = new Todo({ title, description });
   todo = await todo.save();
   if (todo) {
-    return res.status(201).json({ meta, message: 'Todo Successfully Created!', todo })
+    return res
+      .status(201)
+      .json({ meta, message: "Todo Successfully Created!", todo });
   } else {
-    res.status(500).json({ meta, message: 'Server Error. Please Try Again Later.'});
+    res
+      .status(500)
+      .json({ meta, message: "Server Error. Please Try Again Later." });
   }
-  res.status(500).json({ meta, message: 'Server Error. Please Try Again Later.' });
+  res
+    .status(500)
+    .json({ meta, message: "Server Error. Please Try Again Later." });
 });
-app.patch("/todos/:id", (req, res) => {
+app.patch("/todos/:id", async (req, res) => {
   const { id } = req.params.id || 0;
   const { title, description } = req.body;
   const meta = req.headers;
@@ -59,7 +65,7 @@ app.patch("/todos/:id", (req, res) => {
     errors.push("The Description field is required.");
   }
   if (errors.length > 0) {
-    res.status(400).json({ errors, meta})
+    res.status(400).json({ errors, meta });
   }
   let todo = await Todo.findById(id);
   if (todo) {
@@ -67,26 +73,34 @@ app.patch("/todos/:id", (req, res) => {
     todo.description = description;
     todo = await todo.save();
     if (todo) {
-      return res.status(200).json({ meta, message: 'Todo Successfully Updated!', todo })
+      return res
+        .status(200)
+        .json({ meta, message: "Todo Successfully Updated!", todo });
     } else {
-      res.status(500).json({ meta, message: 'Server Error. Please Try Again Later.' });
+      res
+        .status(500)
+        .json({ meta, message: "Server Error. Please Try Again Later." });
     }
   } else {
-    res.status(404).json({ meta, message: 'Todo Not Found' })
-   }
-  res.status(500).json({ meta, message: 'Server Error. Please Try Again Later.' })
+    res.status(404).json({ meta, message: "Todo Not Found" });
+  }
+  res
+    .status(500)
+    .json({ meta, message: "Server Error. Please Try Again Later." });
 });
 app.delete("/todos/:id", async () => {
   const { id } = req.params || 0;
   const meta = req.headers;
   const todo = await Todo.findByIdAndDelete(id);
   if (todo) {
-    res.status(200).json({ meta, message: 'Todo Successfully Deleted!', todo })
+    res.status(200).json({ meta, message: "Todo Successfully Deleted!", todo });
   } else {
-    res.status(404).json({ meta, message: 'Todo Not Found' })
-   }
-  res.status(500).json({ meta, message: 'Server Error. Please Try Again Later.' })
- });
+    res.status(404).json({ meta, message: "Todo Not Found" });
+  }
+  res
+    .status(500)
+    .json({ meta, message: "Server Error. Please Try Again Later." });
+});
 app.listen(PORT, (err) => {
   if (err) {
     console.error(`Failed to establish a connection to port: ${PORT}.`);

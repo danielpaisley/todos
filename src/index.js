@@ -5,8 +5,8 @@ const Todo = require("./database/models/Todo");
 
 const PORT = process.env.PORT || 3000;
 const app = express();
-app.use(express.json());
-// app.use(bodyParser.json());
+// app.use(express.json());
+app.use(bodyParser.json());
 // main.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", async (req, res) => {
@@ -17,8 +17,18 @@ app.get("/", async (req, res) => {
   }
   res.json({ message: "Welcome", todos });
 });
+app.get("/todos/", async (req, res) => {
+  debugger;
+  const meta = req.headers;
+  const todos = await Todo.find({});
+  if (!todos) {
+    res.status(404).json({ meta, message: "No Todos To Show" });
+  }
+  res.json({ message: "Welcome", todos });
+});
 app.get("/todos/:id", async (req, res) => {
   const { id } = req.params || 0;
+  const meta = req.headers;
   const todo = await Todo.findById(id);
   if (todo) {
     res.status(200).json({ meta, todo });

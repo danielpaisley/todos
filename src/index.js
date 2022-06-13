@@ -18,7 +18,6 @@ app.get("/", async (req, res) => {
   res.json({ message: "Welcome", todos });
 });
 app.get("/todos/", async (req, res) => {
-  debugger;
   const meta = req.headers;
   const todos = await Todo.find({});
   if (!todos) {

@@ -22,8 +22,7 @@ app.get("/", async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
-      return res.status(404);
-      // .json({ message: "No Todos To Show" });
+      return res.status(404).json({ message: "No Todos To Show" });
     }
     return res.json({ message: "Welcome", todos });
   } catch (error) {

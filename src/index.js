@@ -7,16 +7,16 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 app.use(bodyParser.json());
 // main.use(bodyParser.urlencoded({ extended: false }));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin,X-Requested-With,Content-Type,Accept,content-type,application/json"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin,X-Requested-With,Content-Type,Accept,content-type,application/json"
+//   );
+//   next();
+// });
 
 app.get("/", async (req, res) => {
   try {
@@ -34,8 +34,7 @@ app.get("/todos/", async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
-      return res.status(404);
-      // .json({ message: "No Todos To Show" });
+      return res.status(404).json({ message: "No Todos To Show" });
     }
     return res.json({ message: "Welcome", todos });
   } catch (error) {
@@ -49,8 +48,7 @@ app.get("/todos/:id", async (req, res) => {
     if (todo) {
       return res.status(200).json({ todo });
     }
-    return res.status(404);
-    // .json({ message: "Todo Not Found" });
+    return res.status(404).json({ message: "Todo Not Found" });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -71,11 +69,13 @@ app.post("/todos/", async (req, res) => {
     let todo = new Todo({ title, description });
     todo = await todo.save();
     if (todo) {
-      return res.status(201);
-      // .json({ message: "Todo Successfully Created!", todo });
+      return res
+        .status(201)
+        .json({ message: "Todo Successfully Created!", todo });
     } else {
-      return res.status(500);
-      // .json({ message: "Server Error. Please Try Again Later." });
+      return res
+        .status(500)
+        .json({ message: "Server Error. Please Try Again Later." });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -101,15 +101,16 @@ app.patch("/todos/:id", async (req, res) => {
       todo.description = description;
       todo = await todo.save();
       if (todo) {
-        return res.status(200);
-        // .json({ message: "Todo Successfully Updated!", todo });
+        return res
+          .status(200)
+          .json({ message: "Todo Successfully Updated!", todo });
       } else {
-        return res.status(500);
-        // .json({ message: "Server Error. Please Try Again Later." });
+        return res
+          .status(500)
+          .json({ message: "Server Error. Please Try Again Later." });
       }
     } else {
-      return res.status(404);
-      // .json({ message: "Todo Not Found" });
+      return res.status(404).json({ message: "Todo Not Found" });
     }
   } catch (error) {
     res.status(500).json(error);
@@ -120,11 +121,11 @@ app.delete("/todos/:id", async (req, res) => {
     const { id } = req.params || 0;
     const todo = await Todo.findByIdAndDelete(id);
     if (todo) {
-      return res.status(200);
-      // .json({ message: "Todo Successfully Deleted!", todo });
+      return res
+        .status(200)
+        .json({ message: "Todo Successfully Deleted!", todo });
     } else {
-      return res.status(404);
-      // .json({ message: "Todo Not Found" });
+      return res.status(404).json({ message: "Todo Not Found" });
     }
   } catch (error) {
     res.status(500).json(error);

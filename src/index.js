@@ -22,7 +22,7 @@ app.get("/", async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
-      return res.status(404);
+      return res.status(404).json();
       // .json({ message: "No Todos To Show" });
     }
     return res.json({ message: "Welcome", todos });
@@ -34,7 +34,7 @@ app.get("/todos/", async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
-      return res.status(404);
+      return res.status(404).json();
       // .json({ message: "No Todos To Show" });
     }
     return res.json({ message: "Welcome", todos });
@@ -45,14 +45,17 @@ app.get("/todos/", async (req, res) => {
 app.get("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params || 0;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json();
+    }
     const todo = await Todo.findById(id);
     if (todo) {
       return res.status(200).json({ todo });
     }
-    return res.status(404);
+    return res.status(404).json();
     // .json({ message: "Todo Not Found" });
   } catch (error) {
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 });
 app.post("/todos/", async (req, res) => {
@@ -71,10 +74,10 @@ app.post("/todos/", async (req, res) => {
     let todo = new Todo({ title, description });
     todo = await todo.save();
     if (todo) {
-      return res.status(201);
+      return res.status(201).json();
       // .json({ message: "Todo Successfully Created!", todo });
     } else {
-      return res.status(500);
+      return res.status(500).json();
       // .json({ message: "Server Error. Please Try Again Later." });
     }
   } catch (error) {
@@ -101,14 +104,14 @@ app.patch("/todos/:id", async (req, res) => {
       todo.description = description;
       todo = await todo.save();
       if (todo) {
-        return res.status(200);
+        return res.status(200).json();
         // .json({ message: "Todo Successfully Updated!", todo });
       } else {
-        return res.status(500);
+        return res.status(500).json();
         // .json({ message: "Server Error. Please Try Again Later." });
       }
     } else {
-      return res.status(404);
+      return res.status(404).json();
       // .json({ message: "Todo Not Found" });
     }
   } catch (error) {
@@ -120,10 +123,10 @@ app.delete("/todos/:id", async (req, res) => {
     const { id } = req.params || 0;
     const todo = await Todo.findByIdAndDelete(id);
     if (todo) {
-      return res.status(200);
+      return res.status(200).json();
       // .json({ message: "Todo Successfully Deleted!", todo });
     } else {
-      return res.status(404);
+      return res.status(404).json();
       // .json({ message: "Todo Not Found" });
     }
   } catch (error) {

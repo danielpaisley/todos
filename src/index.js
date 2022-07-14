@@ -1,24 +1,26 @@
 require("./database/mongoose");
 const express = require("express");
 const bodyParser = require("body-parser");
+var cors = require("cors");
 const Todo = require("./database/models/Todo");
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 const app = express();
 app.use(bodyParser.json());
+app.use(cors());
 // main.use(bodyParser.urlencoded({ extended: false }));
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Credentials", true);
-  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin,X-Requested-With,Content-Type,Accept,content-type,application/json"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Credentials", true);
+//   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin,X-Requested-With,Content-Type,Accept,content-type,application/json"
+//   );
+//   next();
+// });
 
-app.get("/", async (req, res) => {
+app.get("/", cors(), async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
@@ -30,7 +32,7 @@ app.get("/", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.get("/todos/", async (req, res) => {
+app.get("/todos/", cors(), async (req, res) => {
   try {
     const todos = await Todo.find({});
     if (!todos) {
@@ -42,7 +44,7 @@ app.get("/todos/", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.get("/todos/:id", async (req, res) => {
+app.get("/todos/:id", cors(), async (req, res) => {
   try {
     const { id } = req.params || 0;
     if (!id.match(/^[0-9a-fA-F]{24}$/)) {
@@ -58,7 +60,7 @@ app.get("/todos/:id", async (req, res) => {
     return res.status(500).json(error);
   }
 });
-app.post("/todos/", async (req, res) => {
+app.post("/todos/", cors(), async (req, res) => {
   try {
     const { title, description } = Object.keys(req.body).includes("title")
       ? req.body
@@ -86,10 +88,13 @@ app.post("/todos/", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.put("/todos/:id", async (req, res) => {
+app.put("/todos/:id", cors(), async (req, res) => {
   try {
     console.log("PUTxxxxxxxxxxxxxxxxxxxxx", req, "xxxxxxxxxxxxxxxxxxxxxxxxxx");
     const { id } = req.params || 0;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json();
+    }
     const { title, description } = Object.keys(req.body).includes("title")
       ? req.body
       : JSON.parse(req.query[0]);
@@ -123,10 +128,13 @@ app.put("/todos/:id", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.patch("/todos/:id", async (req, res) => {
+app.patch("/todos/:id", cors(), async (req, res) => {
   try {
     console.log("PATCH************", req, "**********************");
     const { id } = req.params || 0;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json();
+    }
     const { title, description } = Object.keys(req.body).includes("title")
       ? req.body
       : JSON.parse(req.query[0]);
@@ -160,9 +168,12 @@ app.patch("/todos/:id", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.delete("/todos/:id", async (req, res) => {
+app.delete("/todos/:id", cors(), async (req, res) => {
   try {
     const { id } = req.params || 0;
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(404).json();
+    }
     const todo = await Todo.findByIdAndDelete(id);
     if (todo) {
       return res.status(200).json();

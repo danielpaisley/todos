@@ -88,6 +88,44 @@ app.post("/todos/", async (req, res) => {
 });
 app.put("/todos/:id", async (req, res) => {
   try {
+    console.log("PUTxxxxxxxxxxxxxxxxxxxxx", req, "xxxxxxxxxxxxxxxxxxxxxxxxxx");
+    const { id } = req.params || 0;
+    const { title, description } = Object.keys(req.body).includes("title")
+      ? req.body
+      : JSON.parse(req.query[0]);
+    const errors = [];
+    if (!title) {
+      errors.push("The Title field is required.");
+    }
+    if (!description) {
+      errors.push("The Description field is required.");
+    }
+    if (errors.length > 0) {
+      return res.status(400).json({ errors, meta });
+    }
+    let todo = await Todo.findById(id);
+    if (todo) {
+      todo.title = title;
+      todo.description = description;
+      todo = await todo.save();
+      if (todo) {
+        return res.status(200).json();
+        // .json({ message: "Todo Successfully Updated!", todo });
+      } else {
+        return res.status(500).json();
+        // .json({ message: "Server Error. Please Try Again Later." });
+      }
+    } else {
+      return res.status(404).json();
+      // .json({ message: "Todo Not Found" });
+    }
+  } catch (error) {
+    res.status(500).json(error);
+  }
+});
+app.patch("/todos/:id", async (req, res) => {
+  try {
+    console.log("PATCH************", req, "**********************");
     const { id } = req.params || 0;
     const { title, description } = Object.keys(req.body).includes("title")
       ? req.body

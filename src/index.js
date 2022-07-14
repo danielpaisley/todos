@@ -60,7 +60,9 @@ app.get("/todos/:id", async (req, res) => {
 });
 app.post("/todos/", async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description } = Object.keys(req.body).includes("title")
+      ? req.body
+      : JSON.parse(req.query[0]);
     const errors = [];
     if (!title) {
       errors.push("The Title field is required.");
@@ -87,7 +89,9 @@ app.post("/todos/", async (req, res) => {
 app.patch("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params || 0;
-    const { title, description } = req.body;
+    const { title, description } = Object.keys(req.body).includes("title")
+      ? req.body
+      : JSON.parse(req.query[0]);
     const errors = [];
     if (!title) {
       errors.push("The Title field is required.");

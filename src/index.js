@@ -86,7 +86,7 @@ app.post("/todos/", async (req, res) => {
     res.status(500).json(error);
   }
 });
-app.patch("/todos/:id", async (req, res) => {
+app.put("/todos/:id", async (req, res) => {
   try {
     const { id } = req.params || 0;
     const { title, description } = Object.keys(req.body).includes("title")
